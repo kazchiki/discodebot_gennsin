@@ -63,8 +63,8 @@ node index.js
 ### 例
 
 ```
-/genshin 800000000
-/character 800000000 10000020
+/genshin 801000880
+/character 801000880 10000002
 ```
 
 ## 参考資料
