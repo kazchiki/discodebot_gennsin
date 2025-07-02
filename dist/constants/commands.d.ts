@@ -14,8 +14,8 @@ export declare const COMMAND_DESCRIPTIONS: {
     readonly CHARACTER: "キャラクターの詳細情報を取得します";
     readonly REGISTER: "あなたのUIDを登録・更新します";
     readonly MY_INFO: "登録済みのUIDで原神情報を表示します";
-    readonly MY_CHARACTERS: "保存されたキャラクター一覧を表示します";
-    readonly MY_CHARACTER: "保存されたキャラクターの詳細を表示します";
+    readonly MY_CHARACTERS: "保存されたキャラクターをセレクトメニューで表示し詳細確認できます";
+    readonly MY_CHARACTER: "セレクトメニューまたは名前指定でキャラクター詳細を表示します";
     readonly MY_ACCOUNTS: "登録済みのアカウント一覧を表示します";
     readonly SWITCH_UID: "アクティブなUIDを切り替えます";
     readonly MY_CHARACTER_BUILD: "あなたのキャラクターから選択して育成計画を立てます";

@@ -53,7 +53,7 @@ export const commands = [
         .addStringOption(option =>
             option.setName(OPTION_NAMES.CHARACTER_NAME)
                 .setDescription(OPTION_DESCRIPTIONS.CHARACTER_NAME)
-                .setRequired(true)),
+                .setRequired(false)),
     
     new SlashCommandBuilder()
         .setName(COMMAND_NAMES.MY_ACCOUNTS)

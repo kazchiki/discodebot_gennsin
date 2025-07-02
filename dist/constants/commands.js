@@ -18,8 +18,8 @@ exports.COMMAND_DESCRIPTIONS = {
     CHARACTER: 'キャラクターの詳細情報を取得します',
     REGISTER: 'あなたのUIDを登録・更新します',
     MY_INFO: '登録済みのUIDで原神情報を表示します',
-    MY_CHARACTERS: '保存されたキャラクター一覧を表示します',
-    MY_CHARACTER: '保存されたキャラクターの詳細を表示します',
+    MY_CHARACTERS: '保存されたキャラクターをセレクトメニューで表示し詳細確認できます',
+    MY_CHARACTER: 'セレクトメニューまたは名前指定でキャラクター詳細を表示します',
     MY_ACCOUNTS: '登録済みのアカウント一覧を表示します',
     SWITCH_UID: 'アクティブなUIDを切り替えます',
     MY_CHARACTER_BUILD: 'あなたのキャラクターから選択して育成計画を立てます'

@@ -39,7 +39,7 @@ exports.commands = [
         .setDescription(commands_1.COMMAND_DESCRIPTIONS.MY_CHARACTER)
         .addStringOption(option => option.setName(commands_1.OPTION_NAMES.CHARACTER_NAME)
         .setDescription(commands_1.OPTION_DESCRIPTIONS.CHARACTER_NAME)
-        .setRequired(true)),
+        .setRequired(false)),
     new discord_js_1.SlashCommandBuilder()
         .setName(commands_1.COMMAND_NAMES.MY_ACCOUNTS)
         .setDescription(commands_1.COMMAND_DESCRIPTIONS.MY_ACCOUNTS),

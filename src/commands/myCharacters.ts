@@ -2,13 +2,15 @@ import {
     ChatInputCommandInteraction,
     EmbedBuilder,
     ActionRowBuilder,
-    ButtonBuilder,
-    ButtonStyle
+    StringSelectMenuBuilder,
+    StringSelectMenuOptionBuilder,
+    ComponentType,
+    StringSelectMenuInteraction
 } from 'discord.js';
 import { getUserCharacters, getUserCharacter } from '../utils/userData';
 import { OPTION_NAMES } from '../constants/commands';
 
-// 保存されたキャラクター一覧を表示
+// 保存されたキャラクター一覧をセレクトメニューで表示
 export async function handleMyCharactersCommand(interaction: ChatInputCommandInteraction): Promise<void> {
     const userId = interaction.user.id;
 
@@ -33,31 +35,65 @@ export async function handleMyCharactersCommand(interaction: ChatInputCommandInt
             return;
         }
 
-        const characterList = Object.entries(savedCharacters)
-            .map(([characterId, data]) => {
-                const level = data.data.propMap['4001']?.val || '不明';
-                const constellation = data.data.propMap['4002']?.val || '0';
-                const lastUpdated = new Date(data.lastUpdated).toLocaleDateString('ja-JP');
-                
-                return `🎭 **${data.characterName}**\n` +
-                       `　　レベル: ${level} | 凸数: ${constellation}\n` +
-                       `　　更新日: ${lastUpdated}`;
-            })
-            .join('\n\n');
+        // セレクトメニューのオプションを作成
+        const characters = Object.entries(savedCharacters);
+        const options = characters.slice(0, 25).map(([characterId, data]) => {
+            const level = data.data.propMap['4001']?.val || '不明';
+            const constellation = data.data.propMap['1002']?.val || '0';
+            const lastUpdated = new Date(data.lastUpdated).toLocaleDateString('ja-JP');
+            
+            return new StringSelectMenuOptionBuilder()
+                .setLabel(data.characterName)
+                .setDescription(`レベル ${level} | コンス ${constellation} | 更新: ${lastUpdated}`)
+                .setValue(characterId);
+        });
+
+        const selectMenu = new StringSelectMenuBuilder()
+            .setCustomId('character_detail_select')
+            .setPlaceholder('詳細を見るキャラクターを選択してください')
+            .addOptions(options);
+
+        const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
 
         const embed = new EmbedBuilder()
             .setColor(0x0099FF)
             .setTitle('📋 保存されたキャラクター一覧')
-            .setDescription(characterList)
+            .setDescription('**下のメニューからキャラクターを選択**して詳細情報を表示できます。')
             .addFields({
-                name: '💡 使い方',
-                value: '特定キャラクターの詳細を見るには `/my-character` コマンドを使用してください。',
+                name: '📊 保存データ概要',
+                value: `🎭 **合計:** ${characters.length}体のキャラクター\n🔄 **最新更新:** ${new Date(Math.max(...characters.map(([_, data]) => new Date(data.lastUpdated).getTime()))).toLocaleDateString('ja-JP')}`,
                 inline: false
             })
-            .setFooter({ text: `${interaction.user.username} | 合計: ${Object.keys(savedCharacters).length}体` })
+            .setFooter({ text: `${interaction.user.username} | キャラクターを選択して詳細表示` })
             .setTimestamp();
 
-        await interaction.editReply({ embeds: [embed] });
+        const response = await interaction.editReply({ embeds: [embed], components: [row] });
+
+        // セレクトメニューの応答を待機
+        try {
+            const selectInteraction = await response.awaitMessageComponent({
+                componentType: ComponentType.StringSelect,
+                time: 60000,
+                filter: (i) => i.user.id === interaction.user.id
+            });
+
+            const selectedCharacterId = selectInteraction.values[0];
+            const selectedCharacter = savedCharacters[selectedCharacterId];
+            
+            await selectInteraction.deferUpdate();
+            
+            // 選択されたキャラクターの詳細を表示
+            await displaySavedCharacterDetails(selectInteraction, selectedCharacter.data, selectedCharacter.characterName, selectedCharacter.lastUpdated);
+
+        } catch (error) {
+            console.error('セレクトメニュー応答エラー:', error);
+            const timeoutEmbed = new EmbedBuilder()
+                .setTitle('⏰ 時間切れ')
+                .setDescription('キャラクター選択がタイムアウトしました。もう一度コマンドを実行してください。')
+                .setColor('#FF4444');
+            
+            await interaction.editReply({ embeds: [timeoutEmbed], components: [] });
+        }
 
     } catch (error: any) {
         console.error('保存されたキャラクター一覧取得エラー:', error);
@@ -65,22 +101,101 @@ export async function handleMyCharactersCommand(interaction: ChatInputCommandInt
     }
 }
 
+// キャラクター選択メニューを表示（my-character用）
+async function showMyCharacterSelectMenu(interaction: ChatInputCommandInteraction, savedCharacters: any): Promise<void> {
+    // セレクトメニューのオプションを作成
+    const characters = Object.entries(savedCharacters);
+    const options = characters.slice(0, 25).map(([characterId, character]: [string, any]) => {
+        const level = character.data.propMap['4001']?.val || '不明';
+        const constellation = character.data.propMap['1002']?.val || '0';
+        const lastUpdated = new Date(character.lastUpdated).toLocaleDateString('ja-JP');
+        
+        return new StringSelectMenuOptionBuilder()
+            .setLabel(character.characterName)
+            .setDescription(`レベル ${level} | コンス ${constellation} | 更新: ${lastUpdated}`)
+            .setValue(characterId);
+    });
+
+    const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId('my_character_select')
+        .setPlaceholder('詳細を表示するキャラクターを選択してください')
+        .addOptions(options);
+
+    const row = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
+
+    const embed = new EmbedBuilder()
+        .setColor(0x9932CC)
+        .setTitle('🎭 キャラクター詳細表示')
+        .setDescription('**詳細情報を見たいキャラクターを選択**してください。')
+        .addFields({
+            name: '📊 保存キャラクター数',
+            value: `${characters.length}体のキャラクターが保存されています`,
+            inline: true
+        })
+        .setFooter({ text: 'キャラクターを選択すると詳細情報が表示されます' });
+
+    const response = await interaction.editReply({ embeds: [embed], components: [row] });
+
+    // セレクトメニューの応答を待機
+    try {
+        const selectInteraction = await response.awaitMessageComponent({
+            componentType: ComponentType.StringSelect,
+            time: 60000,
+            filter: (i) => i.user.id === interaction.user.id
+        });
+
+        const selectedCharacterId = selectInteraction.values[0];
+        const selectedCharacter = savedCharacters[selectedCharacterId];
+        
+        await selectInteraction.deferUpdate();
+        
+        // 選択されたキャラクターの詳細を表示
+        await displaySavedCharacterDetails(selectInteraction, selectedCharacter.data, selectedCharacter.characterName, selectedCharacter.lastUpdated);
+
+    } catch (error) {
+        console.error('セレクトメニュー応答エラー:', error);
+        const timeoutEmbed = new EmbedBuilder()
+            .setTitle('⏰ 時間切れ')
+            .setDescription('キャラクター選択がタイムアウトしました。もう一度コマンドを実行してください。')
+            .setColor('#FF4444');
+        
+        await interaction.editReply({ embeds: [timeoutEmbed], components: [] });
+    }
+}
+
 // 特定の保存されたキャラクター詳細を表示
 export async function handleMyCharacterCommand(interaction: ChatInputCommandInteraction): Promise<void> {
     const userId = interaction.user.id;
-    const characterName = interaction.options.getString(OPTION_NAMES.CHARACTER_NAME)!;
+    const characterName = interaction.options.getString(OPTION_NAMES.CHARACTER_NAME);
 
     try {
         await interaction.deferReply({ ephemeral: true });
 
         const savedCharacters = await getUserCharacters(userId);
 
-        if (!savedCharacters) {
-            await interaction.editReply('❌ キャラクター情報が保存されていません。');
+        if (!savedCharacters || Object.keys(savedCharacters).length === 0) {
+            const embed = new EmbedBuilder()
+                .setColor(0xFFFF00)
+                .setTitle('📋 保存されたキャラクター')
+                .setDescription('まだキャラクター情報が保存されていません。\n\n' +
+                    '💡 **キャラクター情報の保存方法:**\n' +
+                    '1. `/register-uid` でUIDを登録\n' +
+                    '2. `/character` コマンドで自分のキャラクター詳細を表示\n' +
+                    '→ 自動的に保存されます！')
+                .setFooter({ text: `${interaction.user.username}` })
+                .setTimestamp();
+
+            await interaction.editReply({ embeds: [embed] });
             return;
         }
 
-        // キャラクター名で検索
+        // キャラクター名が指定されていない場合はセレクトメニューを表示
+        if (!characterName) {
+            await showMyCharacterSelectMenu(interaction, savedCharacters);
+            return;
+        }
+
+        // キャラクター名で検索（従来の手入力方式）
         const characterEntry = Object.entries(savedCharacters)
             .find(([_, data]) => data.characterName.includes(characterName));
 
@@ -90,7 +205,8 @@ export async function handleMyCharacterCommand(interaction: ChatInputCommandInte
                 .join('\n・');
             
             await interaction.editReply(`❌ 「${characterName}」に一致するキャラクターが見つかりませんでした。\n\n` +
-                `**保存されたキャラクター:**\n・${availableNames}`);
+                `**保存されたキャラクター:**\n・${availableNames}\n\n` +
+                `💡 キャラクター名を省略すると選択メニューが表示されます。`);
             return;
         }
 
@@ -109,7 +225,7 @@ export async function handleMyCharacterCommand(interaction: ChatInputCommandInte
 
 // 保存されたキャラクター詳細の表示ロジック
 async function displaySavedCharacterDetails(
-    interaction: any, 
+    interaction: ChatInputCommandInteraction | StringSelectMenuInteraction, 
     character: any, 
     charName: string, 
     lastUpdated: string
