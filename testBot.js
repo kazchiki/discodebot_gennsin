@@ -47,11 +47,26 @@ client.on('message', message => {
   // ランダムチームを返す（/チームコマンド）
   if (message.content.match(/^\/チーム|^\/team|^\/ランダムチーム|^\/randomteam/)) {
     const characters = [
+      // 主人公
+      { name: '空', element: 1, rarity: 5, owned: 1, gender: 1 }, // 炎, 男
+      { name: '空', element: 2, rarity: 5, owned: 1, gender: 1 }, // 水, 男
+      { name: '空', element: 3, rarity: 5, owned: 1, gender: 1 }, // 風, 男
+      { name: '空', element: 4, rarity: 5, owned: 1, gender: 1 }, // 雷, 男
+      { name: '空', element: 6, rarity: 5, owned: 1, gender: 1 }, // 岩, 男
+      { name: '空', element: 7, rarity: 5, owned: 1, gender: 1 }, // 草, 男
+      { name: '蛍', element: 1, rarity: 5, owned: 1, gender: 2 }, // 炎, 女
+      { name: '蛍', element: 2, rarity: 5, owned: 1, gender: 2 }, // 水, 女
+      { name: '蛍', element: 3, rarity: 5, owned: 1, gender: 2 }, // 風, 女
+      { name: '蛍', element: 4, rarity: 5, owned: 1, gender: 2 }, // 雷, 女
+      { name: '蛍', element: 6, rarity: 5, owned: 1, gender: 2 }, // 岩, 女
+      { name: '蛍', element: 7, rarity: 5, owned: 1, gender: 2 }, // 草, 女
+      // { name: '空', element: 5, rarity: 5, owned: 1, gender: 1 }, // 氷, 男　未実装
+      // { name: '蛍', element: 5, rarity: 5, owned: 1, gender: 2 }, // 氷, 女 未実装
+
+      // 所持キャラクター
       { name: '神里 綾華', element: 5, rarity: 5, owned: 1, gender: 2 }, // 氷, 女
       { name: 'ジン', element: 3, rarity: 5, owned: 1, gender: 2 }, // 風, 女
-      { name: '空', element: 3, rarity: 5, owned: 1, gender: 1 }, // 風, 男
       { name: 'リサ', element: 4, rarity: 4, owned: 1, gender: 2 }, // 雷, 女
-      { name: '蛍', element: 3, rarity: 5, owned: 1, gender: 2 }, // 風, 女
       { name: 'バーバラ', element: 2, rarity: 4, owned: 1, gender: 2 }, // 水, 女
       { name: 'ガイア', element: 5, rarity: 4, owned: 1, gender: 1 }, // 氷, 男
       { name: 'ディルック', element: 1, rarity: 5, owned: 1, gender: 1 }, // 炎, 男
@@ -251,10 +266,10 @@ client.on('message', message => {
     // 配列をシャッフルして必要な人数分選択
     const shuffled = [...filteredCharacters].sort(() => 0.5 - Math.random());
 
+    sendMsg(message.channel.id, `お前がともに戦うメンバーは彼らだ。`);
     for (let teamNum = 1; teamNum <= requestedTeams; teamNum++) {
       const startIndex = (teamNum - 1) * charactersPerTeam;
       const teamMembers = shuffled.slice(startIndex, startIndex + charactersPerTeam);
-
       setTimeout(() => {
         sendMsg(message.channel.id, `**第${teamNum}チーム:**`);
         teamMembers.forEach((character, index) => {
