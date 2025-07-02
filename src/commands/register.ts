@@ -4,6 +4,7 @@ import { OPTION_NAMES } from '../constants/commands';
 
 export async function handleRegisterCommand(interaction: ChatInputCommandInteraction): Promise<void> {
     const uid = interaction.options.getString(OPTION_NAMES.UID)!;
+    const nickname = interaction.options.getString(OPTION_NAMES.NICKNAME);
     const userId = interaction.user.id;
 
     try {
@@ -16,15 +17,18 @@ export async function handleRegisterCommand(interaction: ChatInputCommandInterac
         }
 
         // ユーザーデータを保存
-        await setUserUID(userId, uid, interaction.user.username);
+        await setUserUID(userId, uid, nickname || undefined);
+
+        const nicknameText = nickname ? `（ニックネーム: ${nickname}）` : '';
 
         const embed = new EmbedBuilder()
             .setColor(0x00FF00)
             .setTitle('✅ UID登録完了')
-            .setDescription(`あなたのUID \`${uid}\` を登録しました！`)
+            .setDescription(`あなたのUID \`${uid}\` を登録しました！${nicknameText}`)
             .addFields(
                 { name: '📌 使い方', value: '今後は `/my-genshin` コマンドでUID入力なしで情報を表示できます。', inline: false },
-                { name: '🔄 更新', value: 'UIDを変更したい場合は、再度このコマンドを実行してください。', inline: false }
+                { name: '🔄 更新', value: 'UIDを変更したい場合は、再度このコマンドを実行してください。', inline: false },
+                { name: '📊 複数アカウント', value: '複数のUIDを登録でき、`/switch-uid`で切り替えられます。', inline: false }
             )
             .setFooter({ text: `登録者: ${interaction.user.username}` })
             .setTimestamp();

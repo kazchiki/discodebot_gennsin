@@ -91,8 +91,8 @@ export async function showCharacterDetails(interaction: ChatInputCommandInteract
             
             // 自分のUIDでキャラクター取得した場合のみ保存
             if (userUID === uid) {
-                await saveUserCharacter(userId, characterId, character, charName);
-                console.log(`キャラクター情報を保存しました: ${charName} (ユーザー: ${interaction.user.username})`);
+                await saveUserCharacter(userId, uid, characterId, character, charName);
+                console.log(`キャラクター情報を保存しました: ${charName} (ユーザー: ${interaction.user.username}, UID: ${uid})`);
             }
         } catch (saveError) {
             console.error('キャラクター情報の保存に失敗しました:', saveError);

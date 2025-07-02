@@ -4,13 +4,18 @@ interface SavedCharacter {
     characterName: string;
     lastUpdated: string;
 }
+export interface AccountData {
+    nickname?: string;
+    lastUpdated: string;
+    characters?: {
+        [characterId: string]: SavedCharacter;
+    };
+}
 interface UserData {
     [discordUserId: string]: {
-        uid: string;
-        nickname?: string;
-        lastUpdated: string;
-        characters?: {
-            [characterId: string]: SavedCharacter;
+        currentUID: string;
+        accounts: {
+            [uid: string]: AccountData;
         };
     };
 }
@@ -19,11 +24,18 @@ export declare function saveUserData(userData: UserData): Promise<void>;
 export declare function getUserUID(discordUserId: string): Promise<string | null>;
 export declare function setUserUID(discordUserId: string, uid: string, nickname?: string): Promise<void>;
 export declare function deleteUserData(discordUserId: string): Promise<boolean>;
-export declare function saveUserCharacter(discordUserId: string, characterId: string, characterData: Character, characterName: string): Promise<void>;
+export declare function saveUserCharacter(discordUserId: string, uid: string, characterId: string, characterData: Character, characterName: string): Promise<void>;
 export declare function getUserCharacters(discordUserId: string): Promise<{
+    [characterId: string]: SavedCharacter;
+} | null>;
+export declare function getUserCharactersByUID(discordUserId: string, uid: string): Promise<{
     [characterId: string]: SavedCharacter;
 } | null>;
 export declare function getUserCharacter(discordUserId: string, characterId: string): Promise<SavedCharacter | null>;
 export declare function deleteUserCharacter(discordUserId: string, characterId: string): Promise<boolean>;
+export declare function getUserAccounts(discordUserId: string): Promise<{
+    [uid: string]: AccountData;
+} | null>;
+export declare function switchActiveUID(discordUserId: string, uid: string): Promise<boolean>;
 export {};
 //# sourceMappingURL=userData.d.ts.map

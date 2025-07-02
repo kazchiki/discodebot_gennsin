@@ -33,7 +33,11 @@ export const commands = [
         .addStringOption(option =>
             option.setName(OPTION_NAMES.UID)
                 .setDescription(OPTION_DESCRIPTIONS.UID)
-                .setRequired(true)),
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName(OPTION_NAMES.NICKNAME)
+                .setDescription(OPTION_DESCRIPTIONS.NICKNAME)
+                .setRequired(false)),
     
     new SlashCommandBuilder()
         .setName(COMMAND_NAMES.MY_INFO)
@@ -49,5 +53,17 @@ export const commands = [
         .addStringOption(option =>
             option.setName(OPTION_NAMES.CHARACTER_NAME)
                 .setDescription(OPTION_DESCRIPTIONS.CHARACTER_NAME)
+                .setRequired(true)),
+    
+    new SlashCommandBuilder()
+        .setName(COMMAND_NAMES.MY_ACCOUNTS)
+        .setDescription(COMMAND_DESCRIPTIONS.MY_ACCOUNTS),
+    
+    new SlashCommandBuilder()
+        .setName(COMMAND_NAMES.SWITCH_UID)
+        .setDescription(COMMAND_DESCRIPTIONS.SWITCH_UID)
+        .addStringOption(option =>
+            option.setName(OPTION_NAMES.UID)
+                .setDescription(OPTION_DESCRIPTIONS.UID)
                 .setRequired(true))
 ]; 

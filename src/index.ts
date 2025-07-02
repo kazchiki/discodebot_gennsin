@@ -15,6 +15,7 @@ import { handleCharacterCommand, showCharacterDetails } from './commands/charact
 import { handleRegisterCommand } from './commands/register';
 import { handleMyGenshinCommand } from './commands/myGenshin';
 import { handleMyCharactersCommand, handleMyCharacterCommand } from './commands/myCharacters';
+import { handleMyAccounts, handleSwitchUID } from './commands/accounts';
 import { COMMAND_NAMES } from './constants/commands';
 
 // Discordクライアントの作成
@@ -64,6 +65,10 @@ client.on('interactionCreate', async interaction => {
         await handleMyCharactersCommand(interaction);
     } else if (commandName === COMMAND_NAMES.MY_CHARACTER) {
         await handleMyCharacterCommand(interaction);
+    } else if (commandName === COMMAND_NAMES.MY_ACCOUNTS) {
+        await handleMyAccounts(interaction);
+    } else if (commandName === COMMAND_NAMES.SWITCH_UID) {
+        await handleSwitchUID(interaction);
     }
 });
 

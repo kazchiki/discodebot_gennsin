@@ -67,8 +67,8 @@ async function showCharacterDetails(interaction, uid, characterId) {
             const userUID = await (0, userData_1.getUserUID)(userId);
             // 自分のUIDでキャラクター取得した場合のみ保存
             if (userUID === uid) {
-                await (0, userData_1.saveUserCharacter)(userId, characterId, character, charName);
-                console.log(`キャラクター情報を保存しました: ${charName} (ユーザー: ${interaction.user.username})`);
+                await (0, userData_1.saveUserCharacter)(userId, uid, characterId, character, charName);
+                console.log(`キャラクター情報を保存しました: ${charName} (ユーザー: ${interaction.user.username}, UID: ${uid})`);
             }
         }
         catch (saveError) {

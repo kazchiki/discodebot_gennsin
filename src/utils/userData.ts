@@ -9,13 +9,19 @@ interface SavedCharacter {
     lastUpdated: string;
 }
 
+export interface AccountData {
+    nickname?: string;
+    lastUpdated: string;
+    characters?: {
+        [characterId: string]: SavedCharacter;
+    };
+}
+
 interface UserData {
     [discordUserId: string]: {
-        uid: string;
-        nickname?: string;
-        lastUpdated: string;
-        characters?: {
-            [characterId: string]: SavedCharacter;
+        currentUID: string;  // 現在アクティブなUID
+        accounts: {
+            [uid: string]: AccountData;
         };
     };
 }
@@ -43,20 +49,30 @@ export async function saveUserData(userData: UserData): Promise<void> {
     }
 }
 
-// ユーザーのUIDを取得
+// ユーザーの現在のUIDを取得
 export async function getUserUID(discordUserId: string): Promise<string | null> {
     const userData = await loadUserData();
-    return userData[discordUserId]?.uid || null;
+    return userData[discordUserId]?.currentUID || null;
 }
 
 // ユーザーのUIDを登録/更新
 export async function setUserUID(discordUserId: string, uid: string, nickname?: string): Promise<void> {
     const userData = await loadUserData();
     
-    userData[discordUserId] = {
-        uid,
+    if (!userData[discordUserId]) {
+        userData[discordUserId] = {
+            currentUID: uid,
+            accounts: {}
+        };
+    } else {
+        userData[discordUserId].currentUID = uid;
+    }
+    
+    // アカウント情報を登録/更新
+    userData[discordUserId].accounts[uid] = {
         nickname,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        characters: userData[discordUserId].accounts[uid]?.characters || {}
     };
     
     await saveUserData(userData);
@@ -78,6 +94,7 @@ export async function deleteUserData(discordUserId: string): Promise<boolean> {
 // ユーザーのキャラクター情報を保存
 export async function saveUserCharacter(
     discordUserId: string, 
+    uid: string,
     characterId: string, 
     characterData: Character, 
     characterName: string
@@ -88,11 +105,15 @@ export async function saveUserCharacter(
         throw new Error('ユーザーが登録されていません');
     }
     
-    if (!userData[discordUserId].characters) {
-        userData[discordUserId].characters = {};
+    if (!userData[discordUserId].accounts[uid]) {
+        throw new Error('指定されたUIDが登録されていません');
     }
     
-    userData[discordUserId].characters![characterId] = {
+    if (!userData[discordUserId].accounts[uid].characters) {
+        userData[discordUserId].accounts[uid].characters = {};
+    }
+    
+    userData[discordUserId].accounts[uid].characters![characterId] = {
         data: characterData,
         characterName,
         lastUpdated: new Date().toISOString()
@@ -101,27 +122,60 @@ export async function saveUserCharacter(
     await saveUserData(userData);
 }
 
-// ユーザーの保存されたキャラクター一覧を取得
+// ユーザーの保存されたキャラクター一覧を取得（現在のUIDのもの）
 export async function getUserCharacters(discordUserId: string): Promise<{ [characterId: string]: SavedCharacter } | null> {
     const userData = await loadUserData();
-    return userData[discordUserId]?.characters || null;
+    const currentUID = userData[discordUserId]?.currentUID;
+    if (!currentUID) return null;
+    
+    return userData[discordUserId]?.accounts[currentUID]?.characters || null;
 }
 
-// ユーザーの特定キャラクター情報を取得
+// 特定UIDのキャラクター一覧を取得
+export async function getUserCharactersByUID(discordUserId: string, uid: string): Promise<{ [characterId: string]: SavedCharacter } | null> {
+    const userData = await loadUserData();
+    return userData[discordUserId]?.accounts[uid]?.characters || null;
+}
+
+// ユーザーの特定キャラクター情報を取得（現在のUIDのもの）
 export async function getUserCharacter(discordUserId: string, characterId: string): Promise<SavedCharacter | null> {
     const userData = await loadUserData();
-    return userData[discordUserId]?.characters?.[characterId] || null;
+    const currentUID = userData[discordUserId]?.currentUID;
+    if (!currentUID) return null;
+    
+    return userData[discordUserId]?.accounts[currentUID]?.characters?.[characterId] || null;
 }
 
-// ユーザーの特定キャラクター情報を削除
+// ユーザーの特定キャラクター情報を削除（現在のUIDのもの）
 export async function deleteUserCharacter(discordUserId: string, characterId: string): Promise<boolean> {
     const userData = await loadUserData();
+    const currentUID = userData[discordUserId]?.currentUID;
+    if (!currentUID) return false;
     
-    if (userData[discordUserId]?.characters?.[characterId]) {
-        delete userData[discordUserId].characters![characterId];
+    if (userData[discordUserId]?.accounts[currentUID]?.characters?.[characterId]) {
+        delete userData[discordUserId].accounts[currentUID].characters![characterId];
         await saveUserData(userData);
         return true;
     }
     
     return false;
+}
+
+// ユーザーのアカウント一覧を取得
+export async function getUserAccounts(discordUserId: string): Promise<{ [uid: string]: AccountData } | null> {
+    const userData = await loadUserData();
+    return userData[discordUserId]?.accounts || null;
+}
+
+// アクティブUIDを切り替え
+export async function switchActiveUID(discordUserId: string, uid: string): Promise<boolean> {
+    const userData = await loadUserData();
+    
+    if (!userData[discordUserId]?.accounts[uid]) {
+        return false; // 指定されたUIDが存在しない
+    }
+    
+    userData[discordUserId].currentUID = uid;
+    await saveUserData(userData);
+    return true;
 } 

@@ -10,6 +10,7 @@ const character_1 = require("./commands/character");
 const register_1 = require("./commands/register");
 const myGenshin_1 = require("./commands/myGenshin");
 const myCharacters_1 = require("./commands/myCharacters");
+const accounts_1 = require("./commands/accounts");
 const commands_2 = require("./constants/commands");
 // Discordクライアントの作成
 const client = new discord_js_1.Client({
@@ -55,6 +56,12 @@ client.on('interactionCreate', async (interaction) => {
     }
     else if (commandName === commands_2.COMMAND_NAMES.MY_CHARACTER) {
         await (0, myCharacters_1.handleMyCharacterCommand)(interaction);
+    }
+    else if (commandName === commands_2.COMMAND_NAMES.MY_ACCOUNTS) {
+        await (0, accounts_1.handleMyAccounts)(interaction);
+    }
+    else if (commandName === commands_2.COMMAND_NAMES.SWITCH_UID) {
+        await (0, accounts_1.handleSwitchUID)(interaction);
     }
 });
 // ボタンインタラクションの処理

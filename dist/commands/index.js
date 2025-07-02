@@ -24,7 +24,10 @@ exports.commands = [
         .setDescription(commands_1.COMMAND_DESCRIPTIONS.REGISTER)
         .addStringOption(option => option.setName(commands_1.OPTION_NAMES.UID)
         .setDescription(commands_1.OPTION_DESCRIPTIONS.UID)
-        .setRequired(true)),
+        .setRequired(true))
+        .addStringOption(option => option.setName(commands_1.OPTION_NAMES.NICKNAME)
+        .setDescription(commands_1.OPTION_DESCRIPTIONS.NICKNAME)
+        .setRequired(false)),
     new discord_js_1.SlashCommandBuilder()
         .setName(commands_1.COMMAND_NAMES.MY_INFO)
         .setDescription(commands_1.COMMAND_DESCRIPTIONS.MY_INFO),
@@ -36,6 +39,15 @@ exports.commands = [
         .setDescription(commands_1.COMMAND_DESCRIPTIONS.MY_CHARACTER)
         .addStringOption(option => option.setName(commands_1.OPTION_NAMES.CHARACTER_NAME)
         .setDescription(commands_1.OPTION_DESCRIPTIONS.CHARACTER_NAME)
+        .setRequired(true)),
+    new discord_js_1.SlashCommandBuilder()
+        .setName(commands_1.COMMAND_NAMES.MY_ACCOUNTS)
+        .setDescription(commands_1.COMMAND_DESCRIPTIONS.MY_ACCOUNTS),
+    new discord_js_1.SlashCommandBuilder()
+        .setName(commands_1.COMMAND_NAMES.SWITCH_UID)
+        .setDescription(commands_1.COMMAND_DESCRIPTIONS.SWITCH_UID)
+        .addStringOption(option => option.setName(commands_1.OPTION_NAMES.UID)
+        .setDescription(commands_1.OPTION_DESCRIPTIONS.UID)
         .setRequired(true))
 ];
 //# sourceMappingURL=index.js.map
