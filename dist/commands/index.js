@@ -48,6 +48,17 @@ exports.commands = [
         .setDescription(commands_1.COMMAND_DESCRIPTIONS.SWITCH_UID)
         .addStringOption(option => option.setName(commands_1.OPTION_NAMES.UID)
         .setDescription(commands_1.OPTION_DESCRIPTIONS.UID)
-        .setRequired(true))
+        .setRequired(true)),
+    new discord_js_1.SlashCommandBuilder()
+        .setName(commands_1.COMMAND_NAMES.MY_CHARACTER_BUILD)
+        .setDescription(commands_1.COMMAND_DESCRIPTIONS.MY_CHARACTER_BUILD)
+        .addStringOption(option => option.setName(commands_1.OPTION_NAMES.CHARACTER_NAME)
+        .setDescription(commands_1.OPTION_DESCRIPTIONS.CHARACTER_NAME)
+        .setRequired(false))
+        .addIntegerOption(option => option.setName(commands_1.OPTION_NAMES.TARGET_LEVEL)
+        .setDescription(commands_1.OPTION_DESCRIPTIONS.TARGET_LEVEL)
+        .setRequired(false)
+        .setMinValue(1)
+        .setMaxValue(90))
 ];
 //# sourceMappingURL=index.js.map

@@ -65,5 +65,19 @@ export const commands = [
         .addStringOption(option =>
             option.setName(OPTION_NAMES.UID)
                 .setDescription(OPTION_DESCRIPTIONS.UID)
-                .setRequired(true))
+                .setRequired(true)),
+    
+    new SlashCommandBuilder()
+        .setName(COMMAND_NAMES.MY_CHARACTER_BUILD)
+        .setDescription(COMMAND_DESCRIPTIONS.MY_CHARACTER_BUILD)
+        .addStringOption(option =>
+            option.setName(OPTION_NAMES.CHARACTER_NAME)
+                .setDescription(OPTION_DESCRIPTIONS.CHARACTER_NAME)
+                .setRequired(false))
+        .addIntegerOption(option =>
+            option.setName(OPTION_NAMES.TARGET_LEVEL)
+                .setDescription(OPTION_DESCRIPTIONS.TARGET_LEVEL)
+                .setRequired(false)
+                .setMinValue(1)
+                .setMaxValue(90))
 ]; 

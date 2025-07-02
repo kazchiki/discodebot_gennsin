@@ -16,10 +16,11 @@ import { handleRegisterCommand } from './commands/register';
 import { handleMyGenshinCommand } from './commands/myGenshin';
 import { handleMyCharactersCommand, handleMyCharacterCommand } from './commands/myCharacters';
 import { handleMyAccounts, handleSwitchUID } from './commands/accounts';
+import { handleMyCharacterBuild } from './commands/myBuildPlan';
 import { COMMAND_NAMES } from './constants/commands';
 
 // Discordクライアントの作成
-const client = new Client({
+const client = new Client({ 
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
@@ -69,6 +70,8 @@ client.on('interactionCreate', async interaction => {
         await handleMyAccounts(interaction);
     } else if (commandName === COMMAND_NAMES.SWITCH_UID) {
         await handleSwitchUID(interaction);
+    } else if (commandName === COMMAND_NAMES.MY_CHARACTER_BUILD) {
+        await handleMyCharacterBuild(interaction);
     }
 });
 

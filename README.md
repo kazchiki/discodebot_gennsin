@@ -16,66 +16,107 @@ TypeScriptで書かれており、個人データの保存機能付きで快適�
 - 自動保存機能（自分のキャラクターのみ）
 
 ### 💾 個人データ管理
-- **UID登録**: 一度登録すれば入力不要
+- **複数UID対応**: 複数のアカウントを登録・切り替え可能
+- **ニックネーム機能**: アカウントに分かりやすい名前を設定
 - **キャラクター保存**: 取得したキャラクター情報を自動保存
 - **プライバシー保護**: 自分のデータのみ保存・表示
+
+### 🎯 HoyoLab風育成計画
+- **セレクトメニュー**: 保存キャラクターから視覚的に選択
+- **パーソナライズ**: あなたの実際のキャラクターデータを使用
+- **段階的プラン**: レベル20/40/50/60/70/80/90の各段階を提案
+- **詳細コスト**: モラ、経験書、昇格素材の必要量を正確に計算
+- **進捗表示**: 現在の育成状況を視覚的に表示
+- **柔軟な操作**: 引数なしでも、目標レベルのみでも利用可能
 
 ### 🚀 便利機能
 - **スラッシュコマンド対応**: モダンなDiscordインターフェース
 - **UID省略可能**: 登録済みなら引数不要
 - **インタラクティブUI**: ボタンクリックで簡単操作
+- **自動データ更新**: キャラクター情報の変更を自動検出
 
 ## 🎮 コマンド一覧
 
-### 基本コマンド
-- `/genshin [uid]` - プレイヤー情報を表示（UID省略時は登録済みUID使用）
-- `/character <uid> <character_id>` - キャラクター詳細を表示
+原神Discordボットは以下の**8個**のスラッシュコマンドを提供します：
 
-### 個人データ管理
-- `/register-uid <uid>` - あなたのUIDを登録・更新
-- `/my-genshin` - 登録済みUIDで原神情報を表示
+### 🎯 基本情報コマンド
+- `/genshin [uid]` - 原神プレイヤー情報を表示
+- `/character キャラクター名 [uid]` - 特定キャラクターの詳細情報を表示
+
+### 👤 個人データ管理
+- `/register-uid UID [ニックネーム]` - あなたのUIDを登録・更新
+- `/my-genshin` - 登録済みのUIDで原神情報を表示
 - `/my-characters` - 保存されたキャラクター一覧を表示
-- `/my-character <キャラクター名>` - 保存されたキャラクターの詳細を表示
+- `/my-character キャラクター名` - 保存されたキャラクターの詳細を表示
+
+### 🔄 複数アカウント管理
+- `/my-accounts` - 登録済みのアカウント一覧を表示
+- `/switch-uid UID` - アクティブなUIDを切り替え
+
+### 🎯 HoyoLab風育成計画機能
+- `/my-character-build [キャラクター名] [目標レベル]` - **あなたの保存キャラクターの育成計画を立案**
+  - 引数なし：セレクトメニューでキャラクター選択
+  - キャラクター名のみ：選択キャラクターの総合育成プラン表示
+  - 両方指定：具体的な育成コストを計算
 
 ## 📱 使用例
 
-### 初回設定
+### 🔧 初回設定
 ```
-/register-uid uid:801000880
-```
-
-### 情報取得（自動保存される）
-```
-/genshin
-/character uid:801000880 character_id:10000002
+/register-uid UID:801000880 ニックネーム:メインアカウント
+/register-uid UID:605000723 ニックネーム:サブアカウント
 ```
 
-### 保存データの確認
+### 📊 情報取得（自動保存）
 ```
-/my-characters
-/my-character character_name:綾華
+/genshin                          # アクティブUIDの情報表示
+/character character_name:胡桃    # 胡桃の詳細情報（自動保存）
+```
+
+### 🔄 アカウント切り替え
+```
+/my-accounts                      # 登録済みアカウント一覧
+/switch-uid uid:605000723        # サブアカウントに切り替え
+```
+
+### 💾 保存データの確認
+```
+/my-characters                    # 保存キャラクター一覧
+/my-character character_name:胡桃 # 胡桃の保存データ表示
+```
+
+### 🎯 育成計画の立案
+```
+/my-character-build                              # セレクトメニューでキャラクター選択
+/my-character-build character_name:胡桃           # 胡桃の総合育成プラン表示
+/my-character-build character_name:胡桃 目標レベル:80  # レベル80まで育成コスト
+/my-character-build 目標レベル:90                 # セレクトメニューでレベル90育成
 ```
 
 ## 🏗️ プロジェクト構造
 
 ```
 src/
-├── index.ts                 # メインファイル
+├── index.ts                    # メインファイル（ボット起動・イベント処理）
 ├── types/
-│   └── index.ts            # 型定義
+│   └── index.ts               # TypeScript型定義
 ├── constants/
-│   └── commands.ts         # コマンド定数
+│   └── commands.ts            # コマンド名・説明の一元管理
 ├── data/
-│   └── characters.ts       # キャラクター名マッピング
+│   └── characters.ts          # キャラクター名マッピング
 ├── utils/
-│   └── userData.ts         # ユーザーデータ管理
+│   ├── userData.ts            # ユーザーデータ永続化
+│   ├── buildCalculator.ts     # 育成コスト計算エンジン
+│   └── characterMapping.ts    # 動的キャラクター名変換
 └── commands/
-    ├── index.ts            # コマンド定義
-    ├── genshin.ts          # 原神情報取得
-    ├── character.ts        # キャラクター詳細
-    ├── register.ts         # UID登録
-    ├── myGenshin.ts        # 登録済みUID使用
-    └── myCharacters.ts     # 保存データ管理
+    ├── index.ts               # スラッシュコマンド定義
+    ├── genshin.ts             # 原神プレイヤー情報取得
+    ├── character.ts           # キャラクター詳細表示
+    ├── register.ts            # UID登録・管理
+    ├── myGenshin.ts           # 個人データ表示
+    ├── myCharacters.ts        # 保存キャラクター管理
+    ├── accounts.ts            # 複数アカウント管理
+    └── myBuildPlan.ts         # HoyoLab風育成計画機能
 ```
 
 ## 🔧 開発・実行
@@ -98,19 +139,38 @@ npm run watch    # ファイル変更監視
 
 ## 💾 データ保存
 
-ユーザーデータは `userData.json` に保存されます：
+ユーザーデータは `userData.json` に保存されます（複数アカウント対応）：
 
 ```json
 {
   "DiscordユーザーID": {
-    "uid": "123456789",
-    "nickname": "ユーザー名", 
-    "lastUpdated": "2024-01-01T00:00:00.000Z",
-    "characters": {
-      "キャラクターID": {
-        "data": { /* APIデータ */ },
-        "characterName": "神里 綾華（氷）",
+    "accounts": {
+      "801000880": {
+        "uid": "801000880",
+        "nickname": "メインアカウント",
         "lastUpdated": "2024-01-01T00:00:00.000Z"
+      },
+      "605000723": {
+        "uid": "605000723", 
+        "nickname": "サブアカウント",
+        "lastUpdated": "2024-01-01T00:00:00.000Z"
+      }
+    },
+    "activeUID": "801000880",
+    "characters": {
+      "801000880": {
+        "キャラクターID": {
+          "data": { /* EnkaNetworkAPIデータ */ },
+          "characterName": "胡桃（炎）",
+          "lastUpdated": "2024-01-01T00:00:00.000Z"
+        }
+      },
+      "605000723": {
+        "キャラクターID": {
+          "data": { /* EnkaNetworkAPIデータ */ },
+          "characterName": "神里 綾華（氷）", 
+          "lastUpdated": "2024-01-01T00:00:00.000Z"
+        }
       }
     }
   }
