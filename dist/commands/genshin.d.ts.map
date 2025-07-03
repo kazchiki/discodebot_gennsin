@@ -1,1 +1,0 @@
-{"version":3,"file":"genshin.d.ts","sourceRoot":"","sources":["../../src/commands/genshin.ts"],"names":[],"mappings":"AAAA,OAAO,EACH,2BAA2B,EAK9B,MAAM,YAAY,CAAC;AAQpB,wBAAsB,mBAAmB,CAAC,WAAW,EAAE,2BAA2B,EAAE,GAAG,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC,CA8E9G;AAGD,wBAAsB,oBAAoB,CAAC,WAAW,EAAE,2BAA2B,GAAG,OAAO,CAAC,IAAI,CAAC,CAmBlG"}
