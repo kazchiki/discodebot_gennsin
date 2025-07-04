@@ -17,12 +17,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "discord.js": "^12.5.3"
+    "discord.js": "^14.14.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   }
 }
